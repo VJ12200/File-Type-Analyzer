@@ -2,6 +2,10 @@ package org.example.Analyzer.algorithms;
 
 public class KMP {
     public static boolean match(byte[] text, byte[] pattern) {
+        // Early return for empty pattern or pattern longer than text
+        if (pattern.length == 0) return true;
+        if (pattern.length > text.length) return false;
+
         int[] lps = computeLPS(pattern);
         int textIndex = 0, patternIndex = 0;
         int textLength = text.length;
@@ -28,20 +32,28 @@ public class KMP {
 
     /**
      * Compute Longest Prefix Suffix (LPS) array for the pattern
+     * This is optimized to avoid unnecessary comparisons
      */
     private static int[] computeLPS(byte[] pattern) {
-        int[] lps = new int[pattern.length];
-        int len = 0; // Length of previous longest prefix suffix
+        int length = pattern.length;
+        int[] lps = new int[length];
+
+        // lps[0] is always 0
+        int len = 0;
         int i = 1;
 
-        while (i < pattern.length) {
+        while (i < length) {
             if (pattern[i] == pattern[len]) {
-                lps[i++] = ++len;
+                len++;
+                lps[i] = len;
+                i++;
             } else {
                 if (len != 0) {
-                    len = lps[len - 1]; // Backtrack in LPS array
+                    // Use previously computed LPS values to avoid redundant comparisons
+                    len = lps[len - 1];
                 } else {
-                    lps[i++] = 0; // No matching prefix
+                    lps[i] = 0;
+                    i++;
                 }
             }
         }

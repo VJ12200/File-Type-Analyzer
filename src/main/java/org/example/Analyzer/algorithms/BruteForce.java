@@ -5,19 +5,29 @@ public class BruteForce {
         int patternLength = pattern.length;
         int textLength = text.length;
 
+        // Early return for empty pattern or pattern longer than text
+        if (patternLength == 0) return true;
+        if (patternLength > textLength) return false;
+
+        // Cache the first byte of pattern for faster initial check
+        byte firstByte = pattern[0];
+
         // Slide pattern over text one byte at a time
         for (int i = 0; i <= textLength - patternLength; i++) {
-            boolean matchFound = true;
+            // Quick check for first byte before full comparison
+            if (text[i] == firstByte) {
+                boolean matchFound = true;
 
-            // Compare each byte of pattern with text
-            for (int j = 0; j < patternLength; j++) {
-                if (text[i + j] != pattern[j]) {
-                    matchFound = false;
-                    break; // Early exit on mismatch
+                // Compare each byte of pattern with text
+                for (int j = 1; j < patternLength; j++) {
+                    if (text[i + j] != pattern[j]) {
+                        matchFound = false;
+                        break; // Early exit on mismatch
+                    }
                 }
-            }
 
-            if (matchFound) return true;
+                if (matchFound) return true;
+            }
         }
         return false;
     }
