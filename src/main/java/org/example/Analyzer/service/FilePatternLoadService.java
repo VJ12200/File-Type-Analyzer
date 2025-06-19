@@ -1,7 +1,6 @@
 package org.example.Analyzer.service;
 
 import org.example.Analyzer.model.PatternResult;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -13,14 +12,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class FilePatternLoadService {
 
-    // Update the path to match where your file actually is
     private static final String PATTERNS_FILE = "org/example/Analyzer/config/Patterns.txt";
 
     private final ResourceLoader resourceLoader;
+    private static final Logger logger = LoggerFactory.getLogger(FilePatternLoadService.class);
 
     public FilePatternLoadService(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -78,8 +79,7 @@ public class FilePatternLoadService {
             }
 
         } catch (IOException e) {
-            System.err.println("Error loading patterns file: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error loading patterns file", e);
             throw new RuntimeException("Failed to load patterns from file", e);
         }
 

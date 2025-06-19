@@ -19,12 +19,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AnalyzerService {
     private final FilePatternLoadService patternLoadService;
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
-    private List<PatternResult> cachedPatterns = null;
+    private List<PatternResult> cachedPatterns;
+    private static final Logger logger = LoggerFactory.getLogger(AnalyzerService.class);
 
     @Autowired
     public AnalyzerService(FilePatternLoadService patternLoadService) {
@@ -32,10 +35,9 @@ public class AnalyzerService {
         // Load patterns once at startup
         try {
             this.cachedPatterns = patternLoadService.loadPatternsFromFile();
-            System.out.println("Loaded " + cachedPatterns.size() + " patterns at startup");
+            logger.info("Loaded {} patterns at startup", cachedPatterns.size());
         } catch (Exception e) {
-            System.err.println("Failed to load patterns at startup: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Failed to load patterns at startup: {}", e.getMessage(), e);
             // Initialize with empty list
             this.cachedPatterns = new ArrayList<>();
         }
@@ -68,8 +70,8 @@ public class AnalyzerService {
             try {
                 results.add(future.get());
             } catch (Exception e) {
-                // Log error and continue with other files
-                e.printStackTrace();
+                // Log error with proper context and continue with other files
+                logger.error("Failed to analyze file: {}", e.getMessage(), e);
                 // Add a placeholder result for the failed file
                 results.add(new FileAnalysisResult("Error", "Failed to analyze file", new HashMap<>()));
             }
