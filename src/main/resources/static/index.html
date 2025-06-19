@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Type Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-file-search"></i> File Type Analyzer</h1>
+            <p>Upload files to analyze their type using multiple algorithms</p>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <div class="upload-container" id="drop-area">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Drag & Drop Files Here</h3>
+                    <p>or</p>
+                    <label for="fileInput" class="upload-btn">Browse Files</label>
+                    <input type="file" id="fileInput" multiple hidden>
+                    <p class="file-limit">Maximum file size: 1GB</p>
+                </div>
+
+                <div class="selected-files" id="selected-files">
+                    <h3>Selected Files</h3>
+                    <ul id="file-list"></ul>
+                </div>
+
+                <button id="analyze-btn" class="analyze-btn" disabled>Analyze Files</button>
+            </section>
+
+            <section class="results-section" id="results-section">
+                <h2>Analysis Results</h2>
+                <div class="results-container" id="results-container">
+                    <p class="no-results">No results to display yet.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Analyzing files...</p>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
