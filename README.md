@@ -29,7 +29,7 @@ A modern Java application that analyzes files to determine their type based on b
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/file-type-analyzer.git
+   git clone https://github.com/VJ12200/File-Type-Analyzer
    cd file-type-analyzer
    ```
 
