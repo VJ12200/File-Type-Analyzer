@@ -2,6 +2,10 @@
 
 A modern Java application that analyzes files to determine their type based on binary patterns. It uses four different string-matching algorithms and compares their performance.
 
+![Java](https://img.shields.io/badge/Java-17+-orange?style=flat-square&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0+-green?style=flat-square&logo=spring)
+
+
 ![File Type Analyzer Screenshot](https://i.ibb.co/27M2rkNr/Main-Screen.png)
 
 ## Features
