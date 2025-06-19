@@ -1,0 +1,125 @@
+# File Type Analyzer - Technical Documentation
+
+## Overview
+This application analyzes files to determine their type based on binary patterns. It uses four different string-matching algorithms and compares their performance.
+
+## Architecture
+
+### Main Components
+
+1. **Analyzer.java**
+   - Entry point for the Spring Boot application
+   - Configures the application to exclude database auto-configuration
+
+2. **AnalyzerService.java**
+   - Core service that handles file analysis
+   - Implements four pattern matching algorithms:
+     - Brute Force: Simple character-by-character comparison
+     - Knuth-Morris-Pratt (KMP): Efficient string searching algorithm that preprocesses the pattern
+     - Rabin-Karp (RKM): Uses hashing to find patterns in text
+     - Sliding Window: Optimized approach for binary data comparison
+   - Manages parallel processing of multiple files using ExecutorService
+   - Loads patterns from the patterns.txt file
+
+3. **RPFMAController.java**
+   - REST controller that exposes the API endpoints
+   - Handles file uploads and returns analysis results
+   - Provides endpoints for file preview functionality
+
+4. **DeepAnalysisService.java**
+   - Performs detailed analysis of file content
+   - Analyzes byte distribution and detects text encoding
+   - Provides additional metadata about files
+
+5. **WebConfig.java**
+   - Configures Spring MVC
+   - Sets up resource handlers and view controllers
+
+### Data Models
+
+1. **FileAnalysisResult**
+   - Represents the result of file analysis
+   - Contains file name, detected type, and algorithm performance metrics
+
+2. **Pattern**
+   - Represents a file signature pattern
+   - Contains priority, byte pattern, and file type description
+
+## Key Methods
+
+### AnalyzerService
+
+- **analyzeFiles(List<MultipartFile> files)**
+  - Processes multiple files in parallel using a thread pool
+  - Returns a list of FileAnalysisResult objects
+
+- **analyzeFile(MultipartFile file)**
+  - Analyzes a single file using all four algorithms
+  - Measures performance of each algorithm
+  - Returns a FileAnalysisResult with the detected file type
+
+- **convertPatternToBytes(String pattern)**
+  - Converts hex string patterns (like "25 50 44 46 2D") to byte arrays
+  - Handles both space-separated hex values and escape sequences
+
+- **loadPatterns()**
+  - Loads file signature patterns from the patterns.txt resource file
+  - Parses each line into a Pattern object with priority, byte pattern, and description
+
+### Pattern Matching Algorithms
+
+- **bruteForceSearch(byte[] content, byte[] pattern)**
+  - Simple character-by-character comparison
+  - Time complexity: O(n*m) where n is content length and m is pattern length
+
+- **kmpSearch(byte[] content, byte[] pattern)**
+  - Knuth-Morris-Pratt algorithm
+  - Preprocesses the pattern to avoid unnecessary comparisons
+  - Time complexity: O(n+m)
+
+- **rabinKarpSearch(byte[] content, byte[] pattern)**
+  - Uses rolling hash function to find pattern matches
+  - Time complexity: O(n+m) average case, O(n*m) worst case
+
+- **slidingWindowSearch(byte[] content, byte[] pattern)**
+  - Optimized for binary data
+  - Uses a sliding window approach
+  - Time complexity: O(n)
+
+## Configuration Files
+
+- **application.properties**
+  - Configures Spring Boot application
+  - Sets file upload limits and server port
+
+- **Patterns.txt**
+  - Contains file signatures in the format: priority;"hex pattern";"description"
+  - Used to identify file types based on their binary signatures
+
+## Frontend
+
+- **index.html**
+  - Main user interface for the application
+  - Provides drag-and-drop file upload functionality
+  - Displays analysis results
+
+- **main.js**
+  - Handles user interactions
+  - Manages file uploads and displays results
+  - Communicates with the backend API
+
+- **styles.css**
+  - Defines the visual styling of the application
+
+## Performance Considerations
+
+- Files are processed in parallel to improve throughput
+- Algorithm performance is measured and compared
+- Large files are handled efficiently with streaming where possible
+- File upload size is limited to prevent server overload
+
+## Error Handling
+
+- Failed file analyses are logged and gracefully handled
+- Invalid patterns are reported but don't crash the application
+- API errors return appropriate HTTP status codes and error messages
