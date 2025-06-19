@@ -2,7 +2,7 @@
 
 A modern Java application that analyzes files to determine their type based on binary patterns. It uses four different string-matching algorithms and compares their performance.
 
-![File Type Analyzer Screenshot](screenshot.png)
+![File Type Analyzer Screenshot](https://i.ibb.co/27M2rkNr/Main-Screen.png)
 
 ## Features
 
@@ -17,9 +17,6 @@ A modern Java application that analyzes files to determine their type based on b
 - **Extensive File Type Support**: Recognizes 80+ file formats
 - **Modern UI**: Clean, responsive interface with drag-and-drop support
 
-## Demo
-
-[View Live Demo](https://your-demo-url.com) (Replace with your actual demo URL)
 
 ## Getting Started
 
@@ -56,6 +53,8 @@ A modern Java application that analyzes files to determine their type based on b
 1. Drag and drop files onto the upload area or click to browse
 2. Click "Analyze Files" to start the analysis
 3. View the results showing file types and algorithm performance
+
+![Result](https://github.com/user-attachments/assets/f9a9deb1-d1f3-4276-a487-a58f8143055e)
 
 ### API Usage
 
@@ -113,17 +112,6 @@ Example:
 1;"25 50 44 46 2D";"PDF document"
 ```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## Acknowledgments
 
-- Thanks to all contributors who have helped with the project
-- Special thanks to the Spring Boot team for their excellent framework
+- [This](https://en.wikipedia.org/wiki/List_of_file_signatures) Wikipedia page for the list of file signatures
