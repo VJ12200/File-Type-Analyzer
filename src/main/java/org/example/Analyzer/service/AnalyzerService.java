@@ -56,6 +56,9 @@ public class AnalyzerService {
         }
     }
 
+    /**
+     * Analyzes multiple files in parallel and returns their file types
+     */
     public List<FileAnalysisResult> analyzeFiles(List<MultipartFile> files) throws IOException {
         List<Future<FileAnalysisResult>> futures = new ArrayList<>();
         List<FileAnalysisResult> results = new ArrayList<>();
@@ -70,9 +73,7 @@ public class AnalyzerService {
             try {
                 results.add(future.get());
             } catch (Exception e) {
-                // Log error with proper context and continue with other files
                 logger.error("Failed to analyze file: {}", e.getMessage(), e);
-                // Add a placeholder result for the failed file
                 results.add(new FileAnalysisResult("Error", "Failed to analyze file", new HashMap<>()));
             }
         }
@@ -161,35 +162,53 @@ public class AnalyzerService {
     }
 
     private byte[] convertPatternToBytes(String pattern) {
-        // Handle escape sequences in the pattern
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (int i = 0; i < pattern.length(); i++) {
-            char c = pattern.charAt(i);
-            if (c == '\\' && i + 1 < pattern.length()) {
-                char next = pattern.charAt(++i);
-                switch (next) {
-                    case 'x':
-                        // Handle hex escape sequence \xHH
-                        if (i + 2 < pattern.length()) {
-                            String hex = pattern.substring(i + 1, i + 3);
-                            try {
-                                out.write(Integer.parseInt(hex, 16));
-                            } catch (NumberFormatException e) {
-                                System.err.println("Invalid hex sequence: \\x" + hex);
-                            }
-                            i += 2;
-                        }
-                        break;
-                    case 'n': out.write('\n'); break;
-                    case 'r': out.write('\r'); break;
-                    case 't': out.write('\t'); break;
-                    case '0': out.write(0); break;
-                    default: out.write(next);
+        // Check if pattern is in space-separated hex format
+        if (pattern.matches("([0-9A-Fa-f]{2}\\s*)+")) {
+            // Handle space-separated hex values
+            String[] hexValues = pattern.split("\\s+");
+            byte[] result = new byte[hexValues.length];
+
+            for (int i = 0; i < hexValues.length; i++) {
+                try {
+                    result[i] = (byte) Integer.parseInt(hexValues[i], 16);
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid hex value: {}", hexValues[i]);
+                    // Use 0 as fallback for invalid hex
+                    result[i] = 0;
                 }
-            } else {
-                out.write(c);
             }
+            return result;
+        } else {
+            // Handle escape sequences in the pattern (original implementation)
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            for (int i = 0; i < pattern.length(); i++) {
+                char c = pattern.charAt(i);
+                if (c == '\\' && i + 1 < pattern.length()) {
+                    char next = pattern.charAt(++i);
+                    switch (next) {
+                        case 'x':
+                            // Handle hex escape sequence \xHH
+                            if (i + 2 < pattern.length()) {
+                                String hex = pattern.substring(i + 1, i + 3);
+                                try {
+                                    out.write(Integer.parseInt(hex, 16));
+                                } catch (NumberFormatException e) {
+                                    logger.error("Invalid hex sequence: \\x{}", hex);
+                                }
+                                i += 2;
+                            }
+                            break;
+                        case 'n': out.write('\n'); break;
+                        case 'r': out.write('\r'); break;
+                        case 't': out.write('\t'); break;
+                        case '0': out.write(0); break;
+                        default: out.write(next);
+                    }
+                } else {
+                    out.write(c);
+                }
+            }
+            return out.toByteArray();
         }
-        return out.toByteArray();
     }
 }
