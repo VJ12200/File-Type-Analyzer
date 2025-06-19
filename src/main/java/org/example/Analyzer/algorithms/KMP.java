@@ -1,5 +1,7 @@
 package org.example.Analyzer.algorithms;
 
+import org.example.Analyzer.util.ByteUtils;
+
 public class KMP {
     public static boolean match(byte[] text, byte[] pattern) {
         // Early return for empty pattern or pattern longer than text
@@ -12,14 +14,15 @@ public class KMP {
         int patternLength = pattern.length;
 
         while (textIndex < textLength) {
-            if (pattern[patternIndex] == text[textIndex]) {
+            // Case-insensitive comparison
+            if (ByteUtils.equalsIgnoreCase(pattern[patternIndex], text[textIndex])) {
                 patternIndex++;
                 textIndex++;
             }
 
             if (patternIndex == patternLength) {
                 return true; // Full match found
-            } else if (textIndex < textLength && pattern[patternIndex] != text[textIndex]) {
+            } else if (textIndex < textLength && !ByteUtils.equalsIgnoreCase(pattern[patternIndex], text[textIndex])) {
                 if (patternIndex != 0) {
                     patternIndex = lps[patternIndex - 1]; // Backtrack using LPS
                 } else {

@@ -1,9 +1,10 @@
 package org.example.Analyzer.algorithms;
 
+import org.example.Analyzer.util.ByteUtils;
+
 public class SlidingWindow {
     /**
-     * Optimized sliding window approach with early termination
-     * Avoids unnecessary array copying and comparisons
+     * Optimized sliding window approach with case-insensitive matching
      */
     public static boolean match(byte[] text, byte[] pattern) {
         int patternLength = pattern.length;
@@ -19,14 +20,16 @@ public class SlidingWindow {
 
         // Slide window through text
         for (int i = 0; i <= textLength - patternLength; i++) {
-            // Quick check of first and last bytes
-            if (text[i] == firstByte && text[i + patternLength - 1] == lastByte) {
+            // Quick check of first and last bytes (case-insensitive)
+            if (ByteUtils.equalsIgnoreCase(text[i], firstByte) &&
+                ByteUtils.equalsIgnoreCase(text[i + patternLength - 1], lastByte)) {
+
                 // Only create a window and do full comparison if first and last bytes match
                 boolean match = true;
 
-                // Check all bytes in between
+                // Check all bytes in between (case-insensitive)
                 for (int j = 1; j < patternLength - 1; j++) {
-                    if (text[i + j] != pattern[j]) {
+                    if (!ByteUtils.equalsIgnoreCase(text[i + j], pattern[j])) {
                         match = false;
                         break;
                     }

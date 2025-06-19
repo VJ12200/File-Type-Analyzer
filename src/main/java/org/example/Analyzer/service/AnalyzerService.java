@@ -170,7 +170,8 @@ public class AnalyzerService {
 
             for (int i = 0; i < hexValues.length; i++) {
                 try {
-                    result[i] = (byte) Integer.parseInt(hexValues[i], 16);
+                    // Convert to uppercase to ensure case-insensitive matching
+                    result[i] = (byte) Integer.parseInt(hexValues[i].toUpperCase(), 16);
                 } catch (NumberFormatException e) {
                     logger.error("Invalid hex value: {}", hexValues[i]);
                     // Use 0 as fallback for invalid hex
@@ -191,7 +192,8 @@ public class AnalyzerService {
                             if (i + 2 < pattern.length()) {
                                 String hex = pattern.substring(i + 1, i + 3);
                                 try {
-                                    out.write(Integer.parseInt(hex, 16));
+                                    // Convert to uppercase for case-insensitive matching
+                                    out.write(Integer.parseInt(hex.toUpperCase(), 16));
                                 } catch (NumberFormatException e) {
                                     logger.error("Invalid hex sequence: \\x{}", hex);
                                 }

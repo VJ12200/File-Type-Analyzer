@@ -1,7 +1,7 @@
 # File Type Analyzer - Technical Documentation
 
 ## Overview
-This application analyzes files to determine their type based on binary patterns. It uses four different string-matching algorithms and compares their performance.
+This application analyzes files to determine their type based on binary patterns. It uses four different string-matching algorithms and compares their performance. The application supports case-insensitive pattern matching for hex patterns.
 
 ## Architecture
 
@@ -14,12 +14,13 @@ This application analyzes files to determine their type based on binary patterns
 2. **AnalyzerService.java**
    - Core service that handles file analysis
    - Implements four pattern matching algorithms:
-     - Brute Force: Simple character-by-character comparison
+     - Brute Force: Simple character-by-character comparison with case-insensitivity
      - Knuth-Morris-Pratt (KMP): Efficient string searching algorithm that preprocesses the pattern
-     - Rabin-Karp (RKM): Uses hashing to find patterns in text
-     - Sliding Window: Optimized approach for binary data comparison
+     - Rabin-Karp (RKM): Uses hashing to find patterns in text with case-insensitive matching
+     - Sliding Window: Optimized approach for binary data comparison with case-insensitivity
    - Manages parallel processing of multiple files using ExecutorService
    - Loads patterns from the patterns.txt file
+   - Converts hex patterns to bytes with case-insensitive handling
 
 3. **RPFMAController.java**
    - REST controller that exposes the API endpoints
@@ -34,6 +35,11 @@ This application analyzes files to determine their type based on binary patterns
 5. **WebConfig.java**
    - Configures Spring MVC
    - Sets up resource handlers and view controllers
+
+6. **ByteUtils.java**
+   - Utility class for byte operations
+   - Provides case-insensitive byte comparison functionality
+   - Handles ASCII letter case conversion for pattern matching
 
 ### Data Models
 
@@ -61,29 +67,39 @@ This application analyzes files to determine their type based on binary patterns
 - **convertPatternToBytes(String pattern)**
   - Converts hex string patterns (like "25 50 44 46 2D") to byte arrays
   - Handles both space-separated hex values and escape sequences
+  - Performs case normalization for case-insensitive matching
 
 - **loadPatterns()**
   - Loads file signature patterns from the patterns.txt resource file
   - Parses each line into a Pattern object with priority, byte pattern, and description
 
+### ByteUtils
+
+- **equalsIgnoreCase(byte b1, byte b2)**
+  - Compares two bytes in a case-insensitive manner
+  - Handles ASCII letter case conversion
+  - Returns true if bytes are equal ignoring case, false otherwise
+
 ### Pattern Matching Algorithms
 
 - **bruteForceSearch(byte[] content, byte[] pattern)**
-  - Simple character-by-character comparison
+  - Simple character-by-character comparison with case-insensitivity
+  - Uses early termination and first byte optimization
   - Time complexity: O(n*m) where n is content length and m is pattern length
 
 - **kmpSearch(byte[] content, byte[] pattern)**
-  - Knuth-Morris-Pratt algorithm
+  - Knuth-Morris-Pratt algorithm with case-insensitive matching
   - Preprocesses the pattern to avoid unnecessary comparisons
   - Time complexity: O(n+m)
 
 - **rabinKarpSearch(byte[] content, byte[] pattern)**
   - Uses rolling hash function to find pattern matches
+  - Implements case-insensitive hashing and verification
   - Time complexity: O(n+m) average case, O(n*m) worst case
 
 - **slidingWindowSearch(byte[] content, byte[] pattern)**
-  - Optimized for binary data
-  - Uses a sliding window approach
+  - Optimized for binary data with case-insensitive matching
+  - Uses a sliding window approach with first/last byte optimization
   - Time complexity: O(n)
 
 ## Configuration Files
@@ -95,6 +111,7 @@ This application analyzes files to determine their type based on binary patterns
 - **Patterns.txt**
   - Contains file signatures in the format: priority;"hex pattern";"description"
   - Used to identify file types based on their binary signatures
+  - Patterns are matched case-insensitively (e.g., "FF D8" will match "ff d8")
 
 ## Frontend
 
@@ -117,6 +134,7 @@ This application analyzes files to determine their type based on binary patterns
 - Algorithm performance is measured and compared
 - Large files are handled efficiently with streaming where possible
 - File upload size is limited to prevent server overload
+- Case-insensitive matching adds minimal overhead through optimized implementation
 
 ## Error Handling
 

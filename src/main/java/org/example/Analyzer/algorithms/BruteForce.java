@@ -1,5 +1,7 @@
 package org.example.Analyzer.algorithms;
 
+import org.example.Analyzer.util.ByteUtils;
+
 public class BruteForce {
     public static boolean match(byte[] text, byte[] pattern) {
         int patternLength = pattern.length;
@@ -14,13 +16,13 @@ public class BruteForce {
 
         // Slide pattern over text one byte at a time
         for (int i = 0; i <= textLength - patternLength; i++) {
-            // Quick check for first byte before full comparison
-            if (text[i] == firstByte) {
+            // Quick check for first byte before full comparison (case-insensitive)
+            if (ByteUtils.equalsIgnoreCase(text[i], firstByte)) {
                 boolean matchFound = true;
 
-                // Compare each byte of pattern with text
+                // Compare each byte of pattern with text (case-insensitive)
                 for (int j = 1; j < patternLength; j++) {
-                    if (text[i + j] != pattern[j]) {
+                    if (!ByteUtils.equalsIgnoreCase(text[i + j], pattern[j])) {
                         matchFound = false;
                         break; // Early exit on mismatch
                     }

@@ -1,12 +1,15 @@
 package org.example.Analyzer.algorithms;
 
+import org.example.Analyzer.util.ByteUtils;
+
 public class RKM {
     private static final int BASE = 256; // ASCII character set size
     private static final int PRIME = 16777619; // FNV prime for better hash distribution
 
     /**
-     * Rabin-Karp algorithm with O(n+m) average case time complexity
-     * Uses rolling hash for efficient pattern matching
+     * Rabin-Karp algorithm with case-insensitive matching
+     * Note: For case-insensitive matching, we can't rely solely on hash values
+     * and must perform explicit comparisons
      */
     public static boolean match(byte[] text, byte[] pattern) {
         int patternLength = pattern.length;
@@ -22,15 +25,24 @@ public class RKM {
         }
 
         // Calculate initial hashes and power value
+        // Note: Hash values are only used as a quick filter
+        // We still need to do case-insensitive comparison
         long patternHash = 0;
         long textHash = 0;
         long power = 1;
 
         // Precompute the hash for pattern and first window of text
         for (int i = 0; i < patternLength; i++) {
-            // Use unsigned values for bytes to avoid negative values
-            patternHash = (patternHash * BASE + (pattern[i] & 0xFF)) % PRIME;
-            textHash = (textHash * BASE + (text[i] & 0xFF)) % PRIME;
+            // Use lowercase values for bytes to make hash case-insensitive
+            byte patternByte = pattern[i];
+            byte textByte = text[i];
+
+            // Convert uppercase to lowercase for ASCII letters
+            if (patternByte >= 'A' && patternByte <= 'Z') patternByte += 32;
+            if (textByte >= 'A' && textByte <= 'Z') textByte += 32;
+
+            patternHash = (patternHash * BASE + (patternByte & 0xFF)) % PRIME;
+            textHash = (textHash * BASE + (textByte & 0xFF)) % PRIME;
             if (i < patternLength - 1) {
                 power = (power * BASE) % PRIME;
             }
@@ -40,24 +52,29 @@ public class RKM {
         for (int i = 0; i <= textLength - patternLength; i++) {
             // Only check actual bytes if hash matches (reduces unnecessary comparisons)
             if (patternHash == textHash) {
-                // Quick check of first and last byte before full comparison
-                if (text[i] == pattern[0] && text[i + patternLength - 1] == pattern[patternLength - 1]) {
-                    boolean match = true;
-                    // Check middle bytes
-                    for (int j = 1; j < patternLength - 1; j++) {
-                        if (text[i + j] != pattern[j]) {
-                            match = false;
-                            break;
-                        }
+                // Perform case-insensitive comparison
+                boolean match = true;
+                for (int j = 0; j < patternLength; j++) {
+                    if (!ByteUtils.equalsIgnoreCase(text[i + j], pattern[j])) {
+                        match = false;
+                        break;
                     }
-                    if (match) return true;
                 }
+                if (match) return true;
             }
 
             // Update rolling hash for next window
             if (i < textLength - patternLength) {
+                // Get current and next bytes
+                byte currentByte = text[i];
+                byte nextByte = text[i + patternLength];
+
+                // Convert to lowercase for hash calculation
+                if (currentByte >= 'A' && currentByte <= 'Z') currentByte += 32;
+                if (nextByte >= 'A' && nextByte <= 'Z') nextByte += 32;
+
                 // Remove leading digit, add trailing digit
-                textHash = (BASE * (textHash - (text[i] & 0xFF) * power) + (text[i + patternLength] & 0xFF)) % PRIME;
+                textHash = (BASE * (textHash - (currentByte & 0xFF) * power) + (nextByte & 0xFF)) % PRIME;
                 // Ensure hash is positive
                 if (textHash < 0) textHash += PRIME;
             }
@@ -73,7 +90,7 @@ public class RKM {
         for (int i = 0; i <= textLength - patternLength; i++) {
             boolean match = true;
             for (int j = 0; j < patternLength; j++) {
-                if (text[i + j] != pattern[j]) {
+                if (!ByteUtils.equalsIgnoreCase(text[i + j], pattern[j])) {
                     match = false;
                     break;
                 }
