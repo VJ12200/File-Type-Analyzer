@@ -6,7 +6,7 @@ A modern Java application that analyzes files to determine their type based on b
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0+-green?style=flat-square&logo=spring)
 
 
-![File Type Analyzer Screenshot](https://i.ibb.co/27M2rkNr/Main-Screen.png)
+<img width="1919" height="1080" alt="Main-Screen" src="https://github.com/user-attachments/assets/8c487c5c-087b-4b43-9bdc-55847280e344" />
 
 ## Features
 
@@ -28,6 +28,7 @@ A modern Java application that analyzes files to determine their type based on b
 
 - Java 17 or higher
 - Gradle 8.x
+
 
 ### Installation
 
